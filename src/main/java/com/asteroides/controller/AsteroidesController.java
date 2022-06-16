@@ -1,54 +1,57 @@
 package com.asteroides.controller;
 
 import com.asteroides.exceptions.ValueNotAcceptedException;
-import com.asteroides.modelo.Asteroides;;
-import com.asteroides.modelo.AsteroidsInformation;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
+import com.asteroides.modelo.*;
+import com.asteroides.service.NasaService;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/nasa")
+@RequestMapping("/")
 public class AsteroidesController {
 
-    private Asteroides asteroides;
+  private Asteroides asteroides;
 
-    public  String  formatCurrentDate(LocalDateTime now){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        System.out.println(dtf.format(now));
-        String dateFormat = dtf.format(now);
-        return dateFormat;
+  @Autowired private NasaService nasaService;
+
+  @PostMapping({"asteroides/{day}"})
+  public List<AsteroidesResponse> getNasaList(@PathVariable Long day)
+      throws ValueNotAcceptedException {
+    String url = nasaService.getUrl(day);
+    return getAsteroidsInformation(url);
+  }
+
+  private List<AsteroidesResponse> getAsteroidsInformation(String url) {
+
+    List<Asteroides> asteroidesList = nasaService.getNasaList(url);
+
+    List<AsteroidsInformation> potentiallyHazardousAsteroid =
+        nasaService.getPotentiallyHazardousAsteroid(asteroidesList);
+
+    List<AsteriodWithKilometer> asteriodWithKilometers = new ArrayList<>();
+    for (AsteroidsInformation a : potentiallyHazardousAsteroid) {
+      EstimatedDiameterByKm km = a.getKilometers();
+      asteriodWithKilometers.add(new AsteriodWithKilometer(a.getId(), km.calculateDiameter()));
     }
 
-    @PostMapping({"/asteroides/{day}"})
-    public List<AsteroidsInformation> passParameterToDate(@PathVariable Long day) throws ValueNotAcceptedException {
-        if (day >0 && day<= 7){
-            String star_date = formatCurrentDate(LocalDateTime.now());
-            String end_date=formatCurrentDate(LocalDateTime.now().plusDays(day));
-            String url = "https://api.nasa.gov/neo/rest/v1/feed?start_date="+star_date+"&end_date="+end_date+"&api_key=DEMO_KEY";
-            return getAsteroidsInformations(url);
-        }else{
-            throw new ValueNotAcceptedException();
-        }
-    }
+    List biggestAsteroids =
+        asteriodWithKilometers.stream()
+            .sorted(
+                Comparator.comparingDouble(AsteriodWithKilometer::getAverageDiameter).reversed())
+            .limit(3)
+            .map(AsteriodWithKilometer::getId)
+            .collect(Collectors.toList());
 
-    private List<AsteroidsInformation> getAsteroidsInformations(String url) {
-        RestTemplate restTemplate = new RestTemplate();
-        Asteroides asteroides  =  restTemplate.getForObject(url, Asteroides.class);
-        List<Asteroides> asteroidesList = Arrays.asList(asteroides);
+    List<AsteroidsInformation> asteroidsList =
+        potentiallyHazardousAsteroid.stream()
+            .filter(a -> biggestAsteroids.contains(a.getId()))
+            .collect(Collectors.toList());
 
-        //get hazardous
-        List<AsteroidsInformation> potentiallyHazardousAsteroid = asteroidesList.stream().map(objects -> {
-            return objects.getNear_earth_objects().values();
-        }).flatMap(l -> l.stream()).flatMap(List::stream).filter(a -> {
-            return a.isPotentiallyHazardousAsteroid() == true;
-        }).collect(Collectors.toList());
-        return potentiallyHazardousAsteroid;
-    }
-
+    return asteroidsList.stream()
+        .map(AsteroidesResponse::new)
+        .sorted(Comparator.comparing(AsteroidesResponse::getDiametro).reversed())
+        .collect(Collectors.toList());
+  }
 }
