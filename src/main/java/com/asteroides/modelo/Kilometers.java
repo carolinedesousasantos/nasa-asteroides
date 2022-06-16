@@ -26,4 +26,8 @@ public class Kilometers {
     public void setEstimatedDiameterMax(Double estimatedDiameterMax) {
         this.estimatedDiameterMax = estimatedDiameterMax;
     }
+
+    public void calculateSize(){
+        //calcular media
+    }
 }

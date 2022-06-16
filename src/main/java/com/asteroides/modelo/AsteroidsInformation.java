@@ -2,16 +2,14 @@ package com.asteroides.modelo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
 import java.util.Map;
 
 public class AsteroidsInformation {
 
     private String id;
-    @JsonProperty("neo_reference_id")
-    private String neoReferenceId;
+
     private String name;
-    @JsonProperty("nasa_jpl_url")
-    private  String nasaJplUrl;
 
     @JsonProperty("absolute_magnitude_h")
     private Float absoluteMagnitudeH;
@@ -21,6 +19,9 @@ public class AsteroidsInformation {
 
     @JsonProperty("estimated_diameter")
     private Map<String, Kilometers> estimatedDiameter;
+
+    @JsonProperty("close_approach_data")
+    private List<CloseApproachData> closeApproachData;
 
     public AsteroidsInformation() {
     }
@@ -33,28 +34,12 @@ public class AsteroidsInformation {
         this.id = id;
     }
 
-    public String getNeoReferenceId() {
-        return neoReferenceId;
-    }
-
-    public void setNeoReferenceId(String neoReferenceId) {
-        this.neoReferenceId = neoReferenceId;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNasaJplUrl() {
-        return nasaJplUrl;
-    }
-
-    public void setNasaJplUrl(String nasaJplUrl) {
-        this.nasaJplUrl = nasaJplUrl;
     }
 
     public Float getAbsoluteMagnitudeH() {
@@ -80,4 +65,14 @@ public class AsteroidsInformation {
     public void setEstimatedDiameter(Map<String, Kilometers> estimatedDiameter) {
         this.estimatedDiameter = estimatedDiameter;
     }
+
+    public List<CloseApproachData> getCloseApproachData() {
+        return closeApproachData;
+    }
+
+    public void setCloseApproachData(List<CloseApproachData> closeApproachData) {
+        this.closeApproachData = closeApproachData;
+    }
+
+
 }
