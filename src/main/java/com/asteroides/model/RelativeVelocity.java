@@ -1,4 +1,4 @@
-package com.asteroides.modelo;
+package com.asteroides.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -11,5 +11,5 @@ import lombok.Setter;
 public class RelativeVelocity {
 
   @JsonProperty("kilometers_per_hour")
-  private String kilometers_per_hour;
+  private String kilometersPerHour;
 }
