@@ -15,7 +15,7 @@ public class AsteroidesController {
 
   @Autowired private NasaService nasaService;
 
-  @PostMapping({"asteroides/{day}"})
+  @GetMapping({"asteroides/{day}"})
   public List<AsteroidesResponse> getNasaList(@PathVariable Long day)
       throws ValueNotAcceptedException {
     return nasaService.getAsteroidsInformation(day);
