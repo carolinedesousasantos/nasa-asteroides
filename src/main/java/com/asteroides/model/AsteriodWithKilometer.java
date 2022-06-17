@@ -1,4 +1,4 @@
-package com.asteroides.modelo;
+package com.asteroides.model;
 
 public class AsteriodWithKilometer {
   private String id;

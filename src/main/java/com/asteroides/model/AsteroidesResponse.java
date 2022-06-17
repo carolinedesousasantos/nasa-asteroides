@@ -1,4 +1,4 @@
-package com.asteroides.modelo;
+package com.asteroides.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +21,6 @@ public class AsteroidesResponse {
     CloseApproachData closeApproachData = info.getCloseApproachData().stream().findFirst().get();
     this.fecha = closeApproachData.getCloseApproachDate();
     this.planeta = closeApproachData.getOrbitingBody();
-    this.velocidad = closeApproachData.getRelativeVelocity().getKilometers_per_hour();
+    this.velocidad = closeApproachData.getRelativeVelocity().getKilometersPerHour();
   }
 }
